@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int     @id @default(autoincrement())
+  kindeId            String  @unique // Add this line
+  email              String  @unique
+  firstName          String?
+  lastName           String?
+  profileImage       String?
+  username           String  @unique
+  password           String
+  role               String
+  contactInformation String
+  sales              Sale[]
+}
+
+model Event {
+  id       Int      @id @default(autoincrement())
+  name     String
+  date     DateTime
+  time     DateTime
+  venue    String
+  capacity Int
+  tickets  Ticket[]
+}
+
+model Ticket {
+  id         Int     @id @default(autoincrement())
+  event      Event   @relation(fields: [eventId], references: [id])
+  eventId    Int
+  seatNumber String
+  price      Decimal
+  status     String
+  sale       Sale?
+}
+
+model Sale {
+  id       Int      @id @default(autoincrement())
+  ticket   Ticket   @relation(fields: [ticketId], references: [id])
+  ticketId Int      @unique
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int
+  saleDate DateTime
+  amount   Decimal
+}
+
+model InventoryItem {
+  id        Int     @id @default(autoincrement())
+  name      String
+  quantity  Int
+  unitPrice Decimal
+  category  String
+}
+
+model MaintenanceRecord {
+  id          Int      @id @default(autoincrement())
+  equipmentId Int
+  description String
+  date        DateTime
+  status      String
+}
